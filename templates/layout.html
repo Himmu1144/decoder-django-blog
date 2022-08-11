@@ -20,34 +20,150 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="/">Home</a>
+            <a class="nav-link {% block homeActive %}{% endblock homeActive %}" aria-current="page" href="/">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/about">About</a>
+            <a class="nav-link {% block aboutActive %}{% endblock aboutActive %}" href="/about">About</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/blog">Blog</a>
+            <a class="nav-link {% block blogActive %}{% endblock blogActive %}" href="/blog">Blog</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/contact">Contact Us</a>
+            <a class="nav-link {% block contactActive %}{% endblock contactActive %}" href="/contact">Contact Us</a>
           </li>
 
         </ul>
-        <form class="d-flex" role="search">
-          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+        <form method='get' action='/search' class="d-flex ml-auto" role="search">
+          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name='query'
+            id='query'>
           <button class="btn btn-outline-success" type="submit">Search</button>
         </form>
+        {% if user.is_authenticated %}
+        
+        <ul class="navbar-nav me-5 mb-2 mx-2 mb-lg-0">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" style="color:white;" href="#" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              {{request.user}}
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="/logout">Logout</a></li>
+            </ul>
+          </li>
+        </ul> 
+        {% else %}
+        <!-- Button trigger signupmodal -->
+        <button type="button" class="btn btn-outline-success mx-2" data-bs-toggle="modal" data-bs-target="#SignupModal">
+          SignUp
+        </button>
+
+        <!-- Button trigger loginmodal -->
+        <button type="button" class="btn btn-outline-success mr-2" data-bs-toggle="modal" data-bs-target="#loginModal">
+          Login
+        </button>
+        {% endif %}
       </div>
     </div>
   </nav>
-{% if messages %}
-{% for message in messages %}
+
+
+
+  <!-- signup Modal -->
+  <div class="modal fade" id="SignupModal" tabindex="-1" aria-labelledby="SignupModal" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="SignupModalTitle">SignUp</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+          <form method='post' action='/signup'>
+            {% csrf_token %}
+            <div class="mb-1">
+              <label for="username" class="form-label">Username</label>
+              <input type="text" class="form-control" name="username" id="username" required>
+            </div>
+
+            <div class="mb-1">
+              <span class="mb-1">
+                <label for="fname" class="form-label">First Name</label>
+                <input type="text" class="form-control form-control-sm" name="fname" id="fname" required>
+              </span>
+
+              <span class="mb-1">
+                <label for="lname" class="form-label">Last Name</label>
+                <input type="text" class="form-control form-control-sm" name="lname" id="lname" required>
+              </span>
+            </div>
+
+            <div class="mb-1">
+              <label for="email" class="form-label">Email address</label>
+              <input type="email" class="form-control" name="email" id="email" required>
+            </div>
+
+            <div class="mb-1">
+              <label for="pass1" class="form-label">Password</label>
+              <input type="password" class="form-control" name="pass1" id="pass1" required>
+            </div>
+
+            <div class="mb-2">
+              <label for="pass2" class="form-label">Confirm Password</label>
+              <input type="password" class="form-control" name="pass2" id="pass2" required>
+            </div>
+
+            <button type="submit" class="btn btn-success">Submit</button>
+          </form>
+
+        </div>
+        <!-- <div class="modal-footer">
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div> -->
+      </div>
+    </div>
+  </div>
+
+  <!-- login Modal -->
+  <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModal" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="loginModalTitle">Login</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+          <form action="/login" method="post">
+            {% csrf_token %}
+            <div class="mb-1">
+              <label for="loginusername" class="form-label">Username</label>
+              <input type="text" class="form-control" name="loginusername" id="loginusername" required>
+            </div>
+
+            <div class="mb-2">
+              <label for="loginpassword" class="form-label">Password</label>
+              <input type="password" class="form-control" name="loginpassword" id="loginpassword" required>
+            </div>
+
+            <button type="submit" class="btn btn-success">Submit</button>
+          </form>
+
+        </div>
+        <!-- <div class="modal-footer">
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div> -->
+      </div>
+    </div>
+  </div>
+
+  {% if messages %}
+  {% for message in messages %}
   <div class="alert alert-{{message.tags}} alert-dismissible fade show" role="alert">
     <strong>Holy guacamole!</strong> {{message}}
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
   </div>
   {% endfor %}
-{% endif %}
+  {% endif %}
 
   {% block body %}
 

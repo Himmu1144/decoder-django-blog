@@ -8,13 +8,92 @@ BlogPost
 {% block body %}
 
 <div class="container my-3">
-    <div class="p-3 mb-4 bg-light rounded-3">
-        <div class="container-fluid py-3">
-          <h3 class="display-9 fw-bold">{{post.title}}</h3>
-          <p class="col-md-12 fs-8">by : {{post.author}} - {{post.date}}</p>
-          <p class="col-md-12 fs-5">{{post.message}}</p>
+  <div class="p-3 mb-4 bg-light rounded-3">
+    <div class="container-fluid py-3">
+      <h3 class="display-9 fw-bold">{{post.title}}</h3>
+      <p class="col-md-12 fs-8">by : {{post.author}} - {{post.date}}</p>
+      <p class="col-md-12 fs-5">{{post.message}}</p>
+    </div>
+  </div>
+
+  <div class="container">
+    {% load humanize %}
+    {% load extras %}
+    <h3>comments ({{comments.count}})</h3>
+
+    <div class="mb-3">
+      {% if user.is_authenticated %}
+      <form action="/blog/postcomment" method='post' class='mb-3'>
+        {% csrf_token %}
+        <div class="mb-3 col-md-6">
+          <label for="comment" class="form-label">Post Your Comment Here</label>
+          <input type='text' class="form-control" name="comment" id="comment" placeholder='Enter Comment'>
+          <input type="hidden" name="parentSno" value="">
         </div>
-</div>
+        <input type="hidden" name="postSno" value='{{post.id}}'>
+        <input type="submit" class='btn btn-success' value="submit">
+      </form>
+      {% else %}
+      <p>Please Login to comment</p>
+      {% endif %}
+    </div>
+    {% for comment in comments %}
+    <div class="row my-2">
+      <div class="col-md-1">
+        <img src="/static/img/user11.jpg" class="rounded mx-auto d-block w-100" alt="...">
+      </div>
+      <div class="col-md-11"><strong>{{comment.user.username}}</strong>
+        <span class='small'>&nbsp;{{comment.time|naturaltime}}</span>
+        <p>{{comment.comment}}</p>
+        {% if user.is_authenticated %}
+        
+        <button class="btn btn-success btn-sm" type="button" data-bs-toggle="collapse"
+          data-bs-target="#replybox{{comment.id}}" aria-expanded="false" aria-controls="replybox{{comment.id}}">
+          reply
+        </button>
 
+        {% else %}
 
-{% endblock body %}
+        <button class="btn btn-success btn-sm" type="button" data-bs-toggle="collapse"
+          data-bs-target="#replybox{{comment.id}}" aria-expanded="false" aria-controls="replybox{{comment.id}}" disabled>
+          login to reply
+        </button>
+
+        {% endif %}
+
+        <div class="collapse" id="replybox{{comment.id}}">
+          <div class="card card-body my-2">
+            <form action="/blog/postcomment" method='post' class='mb-3'>
+              {% csrf_token %}
+              <div class="mb-3 col-md-12">
+                <label for="comment" class="form-label">Post a Reply</label>
+                <input type='text' class="form-control" name="comment" id="comment" placeholder='Enter Comment'>
+                <input type="hidden" name="replySno" value='{{comment.id}}'>
+                <input type="hidden" name="parentSno" value=''>
+              </div>
+              <input type="hidden" name="postSno" value='{{post.id}}'>
+              <input type="submit" class='btn btn-success' value="submit">
+            </form>
+          </div>
+          <div class="replyes my-2">
+          {% for reply in replyes|get_replyes:comment.id %}  
+              <ul class="bg-dark text-light my-0 py-1 px-2">
+                <div class="row my-2">
+                  <div class="col-md-1">
+                    <img src="/static/img/user11.jpg" class="rounded mx-auto d-block w-50 py-1" alt="...">
+                  </div>
+                  <div class="col-md-11"><strong>{{reply.user.username}}</strong>
+                    <span class='small'>&nbsp;{{reply.time|naturaltime}}</span>
+                    <p>{{reply.comment}}</p>
+                  </div>
+              </ul>
+              {% endfor %}
+            </div>
+
+        </div>
+
+      </div>
+    </div>
+    {% endfor %}
+
+    {% endblock body %}

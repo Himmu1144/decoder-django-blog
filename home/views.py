@@ -7,10 +7,13 @@ from django.contrib.auth import authenticate,login,logout
 from blog.models import Post
 from django.db.models import Q
 from django.contrib.auth.models import User
+from blog.models import Post
 # Create your views here.
 
 def home(request):
-    return render(request, 'home/index.html')
+    posts = Post.objects.all().order_by('-views')[0:3]
+    popular_posts = {'popular_posts':posts}
+    return render(request, 'home/index.html',popular_posts)
 
 def about(request):
     return render(request, 'home/about.html')

@@ -8,11 +8,11 @@ BlogPost
 {% block body %}
 
 <div class="container my-3">
-  <div class="p-3 mb-4 bg-light rounded-3">
+  <div class="p-3 mb-4">
     <div class="container-fluid py-3">
       <h3 class="display-9 fw-bold">{{post.title}}</h3>
-      <p class="col-md-12 fs-8">by : {{post.author}} - {{post.date}}</p>
-      <p class="col-md-12 fs-5">{{post.message}}</p>
+      <p class="col-md-12 fs-8">by : {{post.author}} - {{post.date}} (<span>{{post.views}} views</span>)</p>
+      <p class="col-md-12 fs-5">{{post.message|safe}}</p>
     </div>
   </div>
 
@@ -97,3 +97,5 @@ BlogPost
     {% endfor %}
 
     {% endblock body %}
+
+    

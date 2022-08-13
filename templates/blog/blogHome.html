@@ -20,7 +20,7 @@ Blog
         <strong class="d-inline-block mb-2 text-success">{{post.author}}</strong>
         <h3 class="mb-0">{{post.title}}</h3>
         <div class="mb-1 text-muted">{{post.date}}</div>
-        <p class="mb-auto">{{post.message | truncatechars:500 }}</p>
+        <p class="mb-auto"><div class="preview">{{post.message|safe | truncatechars:500 }}</div></p>
         <a href="/blog/{{post.slug}}" class="stretched-link" style="color:#198754">Continue reading</a>
       </div>
       {% comment %} <div class="col-auto d-none d-lg-block">
@@ -39,3 +39,13 @@ Blog
 </div>
 
 {% endblock body %}
+
+{% block js %}
+<script>
+  let previews = document.getElementsByClassName('preview');
+  Array.from(previews).forEach((element)=>{
+    element.innerHTML = element.innerText
+  })
+
+</script>
+{% endblock js %}
